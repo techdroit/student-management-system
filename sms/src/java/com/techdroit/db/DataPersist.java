@@ -46,7 +46,7 @@ public class DataPersist {
             rs = stm.executeQuery(sql);
             while (rs.next()) {
                 Student student = new Student();
-                //System.out.println(rs.getInt("id"));
+                System.out.println(rs.getInt("id"));
                 student.setId(rs.getInt("id"));
                 student.setFirstName(rs.getString("first_name"));
                 student.setLastName(rs.getString("last_name"));
@@ -56,7 +56,7 @@ public class DataPersist {
                 student.setDepartment(rs.getString("department"));
                 studentList.add(student);
             }
-
+            System.out.println(studentList.size());
             freeMemory();
 
         } catch (Exception e) {
@@ -69,7 +69,93 @@ public class DataPersist {
 
     public static void main(String[] args) {
         DataPersist d = new DataPersist();
-        d.records();
+        //d.records();
+        d.selectStudent(1);
+    }
+    
+    public int deleteStudent(int id) {
+
+        int x = 0;
+
+        try {
+
+            String sql = "DELETE FROM student where id = ?";
+            connect();
+            prep = con.prepareStatement(sql);
+            prep.setInt(1, id);
+            x = prep.executeUpdate();
+            
+            freeMemory();
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+        return x;
+    }
+
+    public int update(int id, String a, String b, String c, String d,
+            String f, String g) {
+
+        int x = 0;
+
+        try {
+
+            String sql = "UPDATE student SET first_name = ?, last_name = ?, "
+                    + "gender = ?, dob = ?, faculty = ?, department = ? WHERE id = ? ";
+            
+            connect();
+
+            prep = con.prepareStatement(sql);
+            prep.setString(1, a);
+            prep.setString(2, b);
+            prep.setString(3, c);
+            prep.setString(4, d);
+            prep.setString(5, f);
+            prep.setString(6, g);
+            prep.setInt(7, id);
+
+            x = prep.executeUpdate();
+
+            freeMemory();
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            System.out.println(e.getMessage());
+        }
+
+        return x;
+    }
+
+    public Student selectStudent(int id) {
+
+        Student std = new Student();
+
+        try {
+
+            String sql = "SELECT * FROM student where id = ?";
+            connect();
+            prep = con.prepareStatement(sql);
+            prep.setInt(1, id);
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                std.setId(rs.getInt("id"));
+                std.setFirstName(rs.getString("first_name"));
+                std.setLastName(rs.getString("last_name"));
+                std.setGender(rs.getString("gender"));
+                std.setDob(rs.getString("dob"));
+                std.setFaculty(rs.getString("faculty"));
+                std.setDepartment(rs.getString("department"));
+            }
+            freeMemory();
+            System.out.println(std.getDepartment());
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+        return std;
     }
 
     public int insert(String a, String b, String c, String d,
@@ -78,8 +164,8 @@ public class DataPersist {
         int x = 0;
 
         try {
-     
-       String sql = "INSERT INTO student(first_name, last_name, gender, dob, faculty, department) "
+
+            String sql = "INSERT INTO student(first_name, last_name, gender, dob, faculty, department) "
                     + "VALUES(?,?,?,?,?,?)";
 
             connect();

@@ -5,21 +5,17 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page import="com.techdroit.model.Student" %>
+<%
+    Student std = (Student) session.getAttribute("std");
+%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Bootstrap Example</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!--
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-        <script
-            src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
-            integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
-        crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        -->
         <link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
         <script src="resources/jquery-ui/external/jquery/jquery.js" type="text/javascript"></script>
         <script src="resources/jquery-ui/jquery-ui.js" type="text/javascript"></script>
@@ -28,40 +24,41 @@
     </head>
     <body>
         <jsp:include page="template.jsp" />
+
         <div class="container">
             <h2>Student Management System</h2>
             <form class="form-horizontal" action="RegServlet" method="POST">
                 <div class="form-group">
                     <label class="control-label col-sm-2" for="id">Student Id:</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="id" placeholder="Student Id" name="id" readonly>
+                        <input type="text" value="${std.id}" class="form-control" id="id" placeholder="Student Id" name="id" readonly>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-2" for="firstName">First Name:</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="firstName" placeholder="Enter First Name" name="firstName">
+                        <input type="text" value="${std.firstName}" class="form-control" id="firstName" placeholder="Enter First Name" name="firstName">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-2" for="lastName">Last Name:</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="lastName" placeholder="Enter Last Name" name="lastName">
+                        <input type="text" value="${std.lastName}" class="form-control" id="lastName" placeholder="Enter Last Name" name="lastName">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-2">Gender:</label>
                     <label class="radio-inline">
-                        <input type="radio" value="M" name="gender">Male
+                        <input type="radio" value="M" name="gender" <c:if test="${std.gender == 'M'}">checked</c:if>>Male
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" value="F" name="gender">Female
+                        <input type="radio" value="F" name="gender" <c:if test="${std.gender == 'F'}">checked</c:if>>Female
                     </label>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-2" for="dob">DOB:</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="dob" placeholder="Select DOB" name="dob">
+                        <input type="text" value="${std.dob}" class="form-control" id="dob" placeholder="Select DOB" name="dob">
                     </div>
                 </div>
                 <div class="form-group">
@@ -90,8 +87,14 @@
                 </div> 
                 <div class="form-group">        
                     <div class="col-sm-offset-2 col-sm-4">
-                        <button type="reset" class="btn btn-danger">Reset</button>
-                        <button type="submit" class="btn btn-default">Submit</button>
+                        <c:if test="${not empty std}">
+                            <button type="submit" name="btn" value="update" class="btn btn-success">Update</button>
+                        </c:if>
+                        <c:if test="${empty std}">
+                            <button type="reset" class="btn btn-danger">Reset</button>
+                            <button type="submit" name="btn" value="new" class="btn btn-default">Submit</button>
+                        </c:if>
+                        
                     </div>
                 </div>
             </form>
@@ -112,36 +115,61 @@
             $(document).ready(function () {
 
                 $("#faculty").change(function () {
-
-                    var selectedIndex = $(this).prop('selectedIndex');
-                    //alert(selectedIndex);
-                    $("#department").empty();
-                    if (selectedIndex === 0) {
-                        $("#department").append("<option value=''>No faculty selected</option>");
-                    }
-                    else if (selectedIndex === 1) {
-                        $("#department").append("<option value=''>Select department</option>");
-                        $("#department").append("<option value='Biochemistry'>Biochemistry</option>");
-                        $("#department").append("<option value='Biology'>Biology</option>");
-                        $("#department").append("<option value='Computer Science'>Computer Science</option>");
-
-                    } else if (selectedIndex === 2) {
-
-                        $("#department").append("<option value=''>Select department</option>");
-                        $("#department").append("<option value='Electrical'>Electrical</option>");
-                        $("#department").append("<option value='Petroleum'>Petroleum</option>");
-                        $("#department").append("<option value='Mechanical'>Mechanical</option>");
-                    } else {
-
-                        $("#department").append("<option value=''>Select department</option>");
-                        $("#department").append("<option value='Law'>Law</option>");
-                        $("#department").append("<option value='Mass Communication'>Mass Communication</option>");
-                        $("#department").append("<option value='Theatre'>Theatre</option>");
-                    }
+                    reLoadDropDown();
                 });
+
+                $("#faculty").val("${std.faculty}");
+                reLoadDropDown();
+                $("#department").val("${std.department}");
 
             });
 
+            function reLoadDropDown() {
+                var selectedIndex = $("#faculty").prop('selectedIndex');
+                //alert(selectedIndex);
+                if (selectedIndex === 0) {
+                    $("#department").append("<option value=''>No faculty selected</option>");
+                }
+                else if (selectedIndex === 1) {
+
+                    loadScienceDepartments();
+
+                } else if (selectedIndex === 2) {
+
+                    loadEngineeringDepartment();
+
+                } else {
+
+                    loadArtsDepartment();
+                }
+            }
+
+            function loadScienceDepartments() {
+                $("#department").empty();
+                $("#department").append("<option value=''>Select department</option>");
+                $("#department").append("<option value='Biochemistry'>Biochemistry</option>");
+                $("#department").append("<option value='Biology'>Biology</option>");
+                $("#department").append("<option value='Computer Science'>Computer Science</option>");
+            }
+
+            function loadEngineeringDepartment() {
+                $("#department").empty();
+                $("#department").append("<option value=''>Select department</option>");
+                $("#department").append("<option value='Electrical'>Electrical</option>");
+                $("#department").append("<option value='Petroleum'>Petroleum</option>");
+                $("#department").append("<option value='Mechanical'>Mechanical</option>");
+            }
+            function loadArtsDepartment() {
+                $("#department").empty();
+                $("#department").append("<option value=''>Select department</option>");
+                $("#department").append("<option value='Law'>Law</option>");
+                $("#department").append("<option value='Mass Communication'>Mass Communication</option>");
+                $("#department").append("<option value='Theatre'>Theatre</option>");
+            }
+
         </script>
     </body>
+    <%
+        session.setAttribute("std",null);
+    %>
 </html> 

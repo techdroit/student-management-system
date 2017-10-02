@@ -6,23 +6,19 @@
 package com.techdroit.servlet;
 
 import com.techdroit.db.DataPersist;
-import com.techdroit.model.Student;
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author kukut
  */
-public class RecordServlet extends HttpServlet {
+public class DeleteServlet extends HttpServlet {
 
-    
-    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -35,16 +31,19 @@ public class RecordServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        DataPersist db = new DataPersist();
-        List<Student> studentList = db.records();
-        
-        HttpSession session = request.getSession(true);
-        session.setAttribute("stdList", studentList);
-        //session.setAttribute("userName", "Teslim Kuku");
-        
-        response.sendRedirect("records.jsp");
-        
+        String stdId = request.getParameter("id");
+        int id = Integer.parseInt(stdId);
+
+        DataPersist dp = new DataPersist();
+        int x = dp.deleteStudent(id);
+        String statusMessage = x > 0 ? "Student record successfully deleted" : "Student record could not be deleted";
+
+        if (x > 0) {
+            response.sendRedirect("success.jsp?s=" + statusMessage);
+        } else {
+            response.sendRedirect("fail.jsp?s=" + statusMessage);
+        }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,9 +19,12 @@
     </head>
     <body>
         <jsp:include page="template.jsp" />
+        <%
+            String msg = request.getParameter("s");
+        %>
         <div class="container">
             <div class="alert alert-success">
-                <strong>Success!</strong> Student successfully registered.
+                <strong>Success!</strong> <%= msg %>
             </div>
             <a href="reg.jsp" class="btn btn-default">Back</a>
         </div>

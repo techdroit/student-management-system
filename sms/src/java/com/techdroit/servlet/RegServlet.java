@@ -32,14 +32,16 @@ public class RegServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
+
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String gender = request.getParameter("gender");
         String dob = request.getParameter("dob");
         String faculty = request.getParameter("faculty");
         String department = request.getParameter("department");
-        
+
+        String btn = request.getParameter("btn");
+
         Student student = new Student();
         student.setFirstName(firstName);
         student.setLastName(lastName);
@@ -47,36 +49,49 @@ public class RegServlet extends HttpServlet {
         student.setDob(dob);
         student.setFaculty(faculty);
         student.setDepartment(department);
-        
+
         DataPersist db = new DataPersist();
+        int status = 0;
+        String statusMessage = "";
+
+        if (btn.equals("new")) {
+
+            status = db.insert(firstName, lastName, gender, dob, faculty, department);
+            statusMessage = status > 0 ? "Student successfully registered" : "Student could not be registered";
+
+        } else {
+            String stdId = request.getParameter("id");
+            int id = Integer.parseInt(stdId);
+            status = db.update(id, firstName, lastName, gender, dob, faculty, department);
+            statusMessage = status > 0 ? "Student record successfully updated" : "Student record could not be updated";
+        }
+
+        if (status > 0) {
+            response.sendRedirect("success.jsp?s="+statusMessage);
+        } else {
+            response.sendRedirect("fail.jsp?s="+statusMessage);
+        }
+
         //int status = db.insert(student);
-        int status = db.insert(firstName,lastName,gender,dob,faculty,department);
-        
-        if(status > 0){
-            response.sendRedirect("success.jsp");
-        }else{
-            response.sendRedirect("fail.jsp");
-        }
-        
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet RegServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet RegServlet at " + request.getContextPath() + "</h1>");
-            out.println("<h1>First Name: " + firstName + "</h1>");
-            out.println("<h1>Last Name: " + lastName + "</h1>");
-            out.println("<h1>Gender: " + gender + "</h1>");
-            out.println("<h1>DOB: " + dob + "</h1>");
-            out.println("<h1>Faculty: " + faculty + "</h1>");
-            out.println("<h1>Department: " + department + "</h1>");
-            out.println("<h1>Status: " + status + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+        /*try (PrintWriter out = response.getWriter()) {
+         //TODO output your page here. You may use following sample code.
+         out.println("<!DOCTYPE html>");
+         out.println("<html>");
+         out.println("<head>");
+         out.println("<title>Servlet RegServlet</title>");
+         out.println("</head>");
+         out.println("<body>");
+         out.println("<h1>Servlet RegServlet at " + request.getContextPath() + "</h1>");
+         out.println("<h1>First Name: " + firstName + "</h1>");
+         out.println("<h1>Last Name: " + lastName + "</h1>");
+         out.println("<h1>Gender: " + gender + "</h1>");
+         out.println("<h1>DOB: " + dob + "</h1>");
+         out.println("<h1>Faculty: " + faculty + "</h1>");
+         out.println("<h1>Department: " + department + "</h1>");
+         out.println("<h1>Status: " + status + "</h1>");
+         out.println("</body>");
+         out.println("</html>");
+         }*/
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -8,6 +8,14 @@
         <servlet-name>RecordServlet</servlet-name>
         <servlet-class>com.techdroit.servlet.RecordServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EditServlet</servlet-name>
+        <servlet-class>com.techdroit.servlet.EditServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteServlet</servlet-name>
+        <servlet-class>com.techdroit.servlet.DeleteServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>RegServlet</servlet-name>
         <url-pattern>/RegServlet</url-pattern>
@@ -15,6 +23,14 @@
     <servlet-mapping>
         <servlet-name>RecordServlet</servlet-name>
         <url-pattern>/RecordServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EditServlet</servlet-name>
+        <url-pattern>/EditServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteServlet</servlet-name>
+        <url-pattern>/DeleteServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

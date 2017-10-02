@@ -8,7 +8,6 @@ package com.techdroit.servlet;
 import com.techdroit.db.DataPersist;
 import com.techdroit.model.Student;
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,10 +18,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author kukut
  */
-public class RecordServlet extends HttpServlet {
+public class EditServlet extends HttpServlet {
 
-    
-    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -36,15 +33,16 @@ public class RecordServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-        DataPersist db = new DataPersist();
-        List<Student> studentList = db.records();
+        String stdId = request.getParameter("id");
+        int id = Integer.parseInt(stdId);
         
-        HttpSession session = request.getSession(true);
-        session.setAttribute("stdList", studentList);
-        //session.setAttribute("userName", "Teslim Kuku");
+        DataPersist dp = new DataPersist();
+        Student std = dp.selectStudent(id);
         
-        response.sendRedirect("records.jsp");
+        HttpSession session = request.getSession(false);
+        session.setAttribute("std", std);
         
+        response.sendRedirect("reg.jsp");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
